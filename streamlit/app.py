@@ -1,11 +1,10 @@
 import sys
 import os
 import pathlib
-import time
 import streamlit as st
 
 # =========================================
-# IMPORTS DE RUTAS
+# RUTAS E IMPORTS
 # =========================================
 ROOT_DIR = pathlib.Path(__file__).resolve().parents[1]
 sys.path.append(str(ROOT_DIR))
@@ -13,11 +12,11 @@ sys.path.append(str(ROOT_DIR))
 SRC_DIR = ROOT_DIR / "src"
 sys.path.append(str(SRC_DIR))
 
-from rag_chat import answer_with_rag
+from rag_chat import answer_with_rag  # tu backend RAG
 
 
 # =========================================
-# CONFIG STREAMLIT + FUENTES
+# CONFIG STREAMLIT + ESTILO GLOBAL
 # =========================================
 st.set_page_config(
     page_title="RAG WW2 Chatbot",
@@ -25,87 +24,147 @@ st.set_page_config(
     layout="wide"
 )
 
-# ======================
-# ESTILO Y TIPO DE LETRA
-# ======================
+# CSS: fuente, fondo, burbujas, tamaño docs
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
 
-html, body, * {
+html, body, [class*="css"] {
     font-family: 'Poppins', sans-serif !important;
+}
+
+/* Fondo general */
+[data-testid="stAppViewContainer"] {
+    background-color: #0c0f16;
     color: white;
 }
 
-[data-testid="stAppViewContainer"] {
-    background-color: #0c0f16;
-}
-
+/* Sidebar */
 [data-testid="stSidebar"] {
     background-color: #141720;
 }
 
+/* Burbujas chat */
 .chat-bubble-user {
     background-color: #2b2d36;
-    padding: 12px;
+    padding: 12px 16px;
     border-radius: 12px;
     margin-bottom: 6px;
 }
 
 .chat-bubble-assistant {
     background-color: #1f4a72;
-    padding: 12px;
+    padding: 12px 16px;
     border-radius: 12px;
     margin-bottom: 6px;
 }
 
-hr {
-    border: none;
-    height: 1px;
-    background: #374151;
+/* Código de documentos más pequeño */
+pre, code {
+    font-size: 0.70rem !important;
+}
+
+/* Título grande inicial */
+.title-big {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-top: 0.5rem;
+}
+
+/* Título pequeño después de empezar a chatear */
+.title-small {
+    text-align: left;
+    font-size: 1.5rem;
+    margin-top: 0.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.95rem;
+}
+
+/* Lista de chats en sidebar */
+.chat-name {
+    font-size: 0.85rem;
+    margin-bottom: 0.2rem;
+    color: #e5e7eb;
 }
 </style>
 """, unsafe_allow_html=True)
 
 
 # =========================================
-# SIDEBAR
+# ESTADO: MÚLTIPLES CHATS
+# =========================================
+if "chats" not in st.session_state:
+    st.session_state.chats = [{
+        "id": 1,
+        "name": "Chat 1",
+        "messages": []
+    }]
+    st.session_state.current_chat_idx = 0
+
+chats = st.session_state.chats
+current_idx = st.session_state.current_chat_idx
+current_chat = chats[current_idx]
+messages = current_chat["messages"]
+has_messages = len(messages) > 0
+
+
+# =========================================
+# SIDEBAR: INFO + LISTA DE CHATS
 # =========================================
 with st.sidebar:
-    st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/World_War_II_Montage.png/440px-World_War_II_Montage.png")
+    # Imagen (si no carga, no pasa nada)
+    try:
+        st.image(
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/"
+            "World_War_II_Montage_A.jpg/640px-World_War_II_Montage_A.jpg",
+            use_container_width=True
+        )
+    except Exception:
+        pass
 
     st.markdown("### 🧠 Sistema RAG para WW2")
     st.markdown("""
     Este chatbot utiliza:
-    - FAISS como motor principal
-    - Embeddings MiniLM
-    - Llama 3.1 vía Ollama
-    - Dataset histórico indexado
+    - FAISS como motor principal  
+    - Embeddings MiniLM  
+    - Llama 3.1 vía Ollama  
+    - Dataset histórico indexado  
     """)
 
     st.markdown("---")
+    st.markdown("#### 💬 Chats guardados")
 
-    if st.button("🗑 Limpiar conversación"):
-        st.session_state.messages = []
-        st.rerun()
-
-
-# =========================================
-# CABECERA PRINCIPAL
-# =========================================
-st.markdown("<h1 style='text-align: center;'>Chatbot RAG WWII</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center;'>Haz preguntas con rigor histórico basado SOLO en documentos indexados.</p>", unsafe_allow_html=True)
+    for i, chat in enumerate(chats):
+        label = chat["name"] or f"Chat {chat['id']}"
+        if st.button(("👉 " if i == current_idx else "") + label, key=f"chat_btn_{i}"):
+            st.session_state.current_chat_idx = i
+            st.rerun()
 
 
 # =========================================
-# HISTORIAL
+# CABECERA (según si ya hay mensajes)
 # =========================================
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+if not has_messages:
+    st.markdown("<h1 class='title-big'>🪖 Chatbot RAG WWII</h1>", unsafe_allow_html=True)
+    st.markdown(
+        "<p class='subtitle'>Haz preguntas con rigor histórico basado SOLO en documentos indexados.</p>",
+        unsafe_allow_html=True
+    )
+else:
+    st.markdown("<h1 class='title-small'>🪖 Chatbot RAG WWII</h1>", unsafe_allow_html=True)
+
+st.markdown("")  # pequeño espacio
 
 
-# Mostrar mensajes previos
-for msg in st.session_state.messages:
+# =========================================
+# MOSTRAR HISTORIAL DEL CHAT ACTUAL
+# =========================================
+for msg in messages:
     if msg["role"] == "user":
         st.markdown(f"<div class='chat-bubble-user'>🧑 {msg['content']}</div>", unsafe_allow_html=True)
     else:
@@ -113,43 +172,85 @@ for msg in st.session_state.messages:
 
 
 # =========================================
-# INPUT DEL USUARIO
+# BOTONES DE ACCIÓN (ENCIMA DEL INPUT)
+# =========================================
+col_btn1, col_btn2, col_btn3 = st.columns([6, 1, 1])
+
+with col_btn2:
+    clear_clicked = st.button("🗑 Limpiar", use_container_width=True)
+with col_btn3:
+    new_chat_clicked = st.button("➕ Nuevo chat", use_container_width=True)
+
+# manejar botones
+if clear_clicked:
+    current_chat["messages"] = []
+    st.rerun()
+
+if new_chat_clicked:
+    new_id = max(c["id"] for c in chats) + 1 if chats else 1
+    chats.append({
+        "id": new_id,
+        "name": f"Chat {new_id}",
+        "messages": []
+    })
+    st.session_state.current_chat_idx = len(chats) - 1
+    st.rerun()
+
+
+# =========================================
+# INPUT DEL USUARIO (ABAJO DEL TODO)
 # =========================================
 question = st.chat_input("Pregunta sobre batallas, líderes, fechas o hechos históricos...")
 
+
+# =========================================
+# LÓGICA DE PREGUNTA / RESPUESTA
+# =========================================
 if question:
-    st.session_state.messages.append({"role": "user", "content": question})
+    # actualizar nombre del chat con la primera pregunta
+    if len(messages) == 0:
+        snippet = question.strip()
+        if len(snippet) > 30:
+            snippet = snippet[:30] + "..."
+        current_chat["name"] = snippet
+
+    # guardar pregunta
+    messages.append({"role": "user", "content": question})
     st.markdown(f"<div class='chat-bubble-user'>🧑 {question}</div>", unsafe_allow_html=True)
 
     with st.spinner("Buscando información real y contrastada..."):
-        response = answer_with_rag(question)
-        answer = response["answer"]
+        result = answer_with_rag(question)
+        answer = result["answer"]
 
-        # Efecto typing
-        placeholder = st.empty()
-        typed = ""
-        for ch in answer:
-            typed += ch
-            placeholder.markdown(f"<div class='chat-bubble-assistant'>🎖️ {typed}█</div>", unsafe_allow_html=True)
-            time.sleep(0.008)
-        placeholder.markdown(f"<div class='chat-bubble-assistant'>🎖️ {answer}</div>", unsafe_allow_html=True)
-
-    st.session_state.messages.append({"role": "assistant", "content": answer})
+    # mostrar respuesta
+    st.markdown(f"<div class='chat-bubble-assistant'>🎖️ {answer}</div>", unsafe_allow_html=True)
+    messages.append({"role": "assistant", "content": answer})
 
     # =========================================
-    # CONTEXTO UTILIZADO
+    # DOCUMENTOS USADOS (solo si hay respuesta útil)
     # =========================================
-    with st.expander("📄 Documentos utilizados para responder"):
-        for i, doc in enumerate(response.get("context_docs", []), start=1):
-            st.markdown(f"### 📌 Documento nº {i}")
-            fuente = doc.get("fuente", "?")
-            meta = doc.get("metadata", {})
-            title = meta.get("title") or meta.get("filename") or "Sin título"
-            st.markdown(f"**Fuente:** `{fuente}`")
-            st.markdown(f"**Título/Origen:** `{title}`")
+    answer_lower = answer.lower()
+    context_docs = result.get("context_docs", []) or []
 
-            # Mostrar extracto real
-            texto = doc.get("texto", "")
-            st.code(texto[:800] + ("..." if len(texto) > 800 else ""), language="markdown")
+    # solo mostrar si NO dice “no aparece en los documentos”
+    show_docs = (
+        context_docs
+        and "no aparece en los documentos" not in answer_lower
+        and "no aparece en el contexto" not in answer_lower
+    )
 
-            st.markdown("---")
+    if show_docs:
+        with st.expander("📄 Documentos utilizados para responder"):
+            for i, doc in enumerate(context_docs[:2], start=1):  # solo 2 docs
+                st.markdown(f"### 📌 Documento {i}")
+                fuente = doc.get("fuente", "?")
+                meta = doc.get("metadata", {})
+                title = meta.get("title") or meta.get("filename") or "Sin título"
+
+                st.markdown(f"**Fuente:** `{fuente}`")
+                st.markdown(f"**Título/Origen:** `{title}`")
+
+                texto = doc.get("texto", "") or ""
+                snippet = texto[:800] + ("..." if len(texto) > 800 else "")
+                st.code(snippet, language="markdown")
+                st.markdown("---")
