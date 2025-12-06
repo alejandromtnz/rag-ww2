@@ -84,7 +84,7 @@ def call_llama(prompt: str, system_prompt: str | None = None) -> str:
         "stream": False,
         "options": {
             "temperature": 0.2,
-            "num_predict": 120
+            "num_predict": 140
         },
     }
 
@@ -127,7 +127,7 @@ Si la respuesta no está claramente en el contexto, di que no aparece en los doc
 
 Si la pregunta pide un número (personas, muertos, años, fechas), responde
 PRIMERO con la cifra o la fecha, y luego añade como máximo una breve explicación
-de 1–2 frases. No des contexto histórico general si no es necesario.
+de 1–2 frases. No des contexto histórico general si no es necesario o no se pide.
 
 Contexto:
 {context_str}
