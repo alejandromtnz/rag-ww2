@@ -74,12 +74,26 @@ if question:
 
     # Mostrar contexto usado (opcional desplegable)
     with st.expander("📄 Documentos usados"):
-        for i, d in enumerate(result.get("context_docs", []), start=1):
+
+        # CSS para hacer el texto más pequeño
+        st.markdown(
+            """
+            <style>
+            .small-text {
+                font-size: 0.85rem;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+        # Mostrar solo 2 documentos
+        for i, d in enumerate(result.get("context_docs", [])[:2], start=1):
             fuente = d.get("fuente", "")
             meta = d.get("metadata", {})
             title = meta.get("title") or meta.get("filename") or ""
 
-            st.markdown(f"### Documento {i}")
-            st.markdown(f"**Fuente:** {fuente}")
-            st.markdown(f"**Título:** {title}")
-            st.markdown("---")
+            st.markdown(f"<div class='small-text'><strong>Documento {i}</strong></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='small-text'>Fuente: {fuente}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='small-text'>Título: {title}</div>", unsafe_allow_html=True)
+            st.markdown("<hr>", unsafe_allow_html=True)
