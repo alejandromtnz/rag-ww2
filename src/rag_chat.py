@@ -44,7 +44,8 @@ with open(META_PATH, "r", encoding="utf-8") as f:
 print(f"[INFO] Chunks en índice: {index.ntotal}")
 print("[INFO] Cargando modelo de embeddings...")
 os.environ["HF_HUB_OFFLINE"] = "1"
-embedder = SentenceTransformer(EMBEDDING_MODEL_NAME, local_files_only=True)
+# embedder = SentenceTransformer(EMBEDDING_MODEL_NAME, local_files_only=True) # para local
+embedder = SentenceTransformer(EMBEDDING_MODEL_NAME)
 
 
 # ==========================
