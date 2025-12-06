@@ -28,8 +28,8 @@ st.set_page_config(
 )
 
 
-st.title("Chatbot RAG – Segunda Guerra Mundial")
-st.caption("Pregunta lo que quieras. Respuestas basadas SOLO en tu dataset indexado.")
+st.title("Chatbot RAG – WW2")
+st.caption("Pregunta lo que quieras sobre la Segunda Guerra Mundial. Respuestas basadas SOLO en tu dataset indexado.")
 
 
 # ==========================
@@ -50,7 +50,7 @@ for msg in st.session_state.messages:
 # INPUT DEL USUARIO
 # ==========================
 
-question = st.chat_input("Haz tu pregunta sobre WW2...")
+question = st.chat_input("Haz tu pregunta aquí...")
 
 if question:
     # Añadir el mensaje del usuario
@@ -73,14 +73,23 @@ if question:
     )
 
     # Mostrar contexto usado (opcional desplegable)
-    with st.expander("📄 Documentos usados"):
+    with st.expander("Documentos usados"):
 
-        # CSS para hacer el texto más pequeño
+        # CSS para hacer el texto más pequeño y la cita estilizada
         st.markdown(
             """
             <style>
             .small-text {
                 font-size: 0.85rem;
+            }
+            .quote-box {
+                font-size: 0.80rem;
+                font-style: italic;
+                color: #555;
+                padding-left: 10px;
+                border-left: 3px solid #ccc;
+                margin-top: 4px;
+                margin-bottom: 8px;
             }
             </style>
             """,
@@ -90,10 +99,46 @@ if question:
         # Mostrar solo 2 documentos
         for i, d in enumerate(result.get("context_docs", [])[:2], start=1):
             fuente = d.get("fuente", "")
-            meta = d.get("metadata", {})
+            meta = d.get("metadata", {}) or {}
             title = meta.get("title") or meta.get("filename") or ""
 
-            st.markdown(f"<div class='small-text'><strong>Documento {i}</strong></div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='small-text'>Fuente: {fuente}</div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='small-text'>Título: {title}</div>", unsafe_allow_html=True)
+            # Intentar varios nombres de campo para el texto del chunk
+            raw_text = (
+                d.get("content")
+                or d.get("text")
+                or d.get("page_content")
+                or d.get("chunk")
+                or d.get("body")
+                or d.get("texto")
+                or ""
+            )
+
+            # Si aun así está vacío, ponemos un mensaje por defecto
+            if raw_text.strip() == "":
+                snippet = "Fragmento no disponible en los metadatos del documento."
+            else:
+                snippet = (raw_text[:200] + "…") if len(raw_text) > 200 else raw_text
+
+            # Mostrar encabezado
+            st.markdown(
+                f"<div class='small-text'><strong>Documento {i}</strong></div>",
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"<div class='small-text'>Fuente: {fuente}</div>",
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"<div class='small-text'>Título: {title}</div>",
+                unsafe_allow_html=True
+            )
+
+            # Mostrar cita
+            st.markdown(
+                f"<div class='quote-box'>“{snippet}”</div>",
+                unsafe_allow_html=True
+            )
+
             st.markdown("<hr>", unsafe_allow_html=True)
+
+
