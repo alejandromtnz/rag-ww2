@@ -96,7 +96,7 @@ pre, code {
 
 
 # =========================================
-# ESTADO: MÚLTIPLES CHATS
+# ESTADO: MÚLTIPLES CHATS + DOCS
 # =========================================
 if "chats" not in st.session_state:
     st.session_state.chats = [{
@@ -105,6 +105,9 @@ if "chats" not in st.session_state:
         "messages": []
     }]
     st.session_state.current_chat_idx = 0
+
+if "last_context_docs" not in st.session_state:
+    st.session_state.last_context_docs = []
 
 chats = st.session_state.chats
 current_idx = st.session_state.current_chat_idx
@@ -162,22 +165,48 @@ st.markdown("")  # pequeño espacio
 
 
 # =========================================
-# MOSTRAR HISTORIAL DEL CHAT ACTUAL
+# CONTENEDOR DEL CHAT (CONVERSACIÓN + DOCS)
 # =========================================
-for msg in messages:
-    if msg["role"] == "user":
-        st.markdown(f"<div class='chat-bubble-user'>🧑 {msg['content']}</div>", unsafe_allow_html=True)
-    else:
-        st.markdown(f"<div class='chat-bubble-assistant'>🎖️ {msg['content']}</div>", unsafe_allow_html=True)
+chat_container = st.container()
+
+with chat_container:
+    for msg in messages:
+        if msg["role"] == "user":
+            st.markdown(f"<div class='chat-bubble-user'>🧑 {msg['content']}</div>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<div class='chat-bubble-assistant'>🎖️ {msg['content']}</div>", unsafe_allow_html=True)
+
+    # documentos de la última respuesta (si los hay)
+    docs = st.session_state.last_context_docs
+    if docs:
+        with st.expander("📄 Documentos utilizados para responder"):
+            for i, doc in enumerate(docs, start=1):  # solo 2 docs ya recortados antes
+                st.markdown(f"### 📌 Documento {i}")
+                fuente = doc.get("fuente", "?")
+                meta = doc.get("metadata", {})
+                title = meta.get("title") or meta.get("filename") or "Sin título"
+
+                st.markdown(f"**Fuente:** `{fuente}`")
+                st.markdown(f"**Título/Origen:** `{title}`")
+
+                texto = doc.get("texto", "") or ""
+                snippet = texto[:800] + ("..." if len(texto) > 800 else "")
+                st.code(snippet, language="markdown")
+                st.markdown("---")
 
 
 # =========================================
-# INPUT + BOTONES EN LA MISMA LÍNEA (ABAJO)
+# INPUT SIEMPRE ABAJO + BOTONES
 # =========================================
-col_in1, col_in2, col_in3 = st.columns([6, 1, 1])
+# 👉 Esto se queda SIEMPRE abajo, como en ChatGPT
+question = st.chat_input(
+    "Pregunta sobre batallas, líderes, fechas o hechos históricos...",
+    key="chat_input_main"
+)
 
-with col_in1:
-    question = st.chat_input("Pregunta sobre batallas, líderes, fechas o hechos históricos...")
+# Estos botones irán justo encima de la barra de chat (no en la misma línea,
+# pero muy cerca; con Streamlit puro no se puede meterlos dentro del chat_input)
+col_in2, col_in3 = st.columns([1, 1])
 
 with col_in2:
     clear_clicked = st.button("🗑 Limpiar", use_container_width=True)
@@ -185,9 +214,11 @@ with col_in2:
 with col_in3:
     new_chat_clicked = st.button("➕ Nuevo chat", use_container_width=True)
 
+
 # manejar botones
 if clear_clicked:
     current_chat["messages"] = []
+    st.session_state.last_context_docs = []
     st.rerun()
 
 if new_chat_clicked:
@@ -198,10 +229,13 @@ if new_chat_clicked:
         "messages": []
     })
     st.session_state.current_chat_idx = len(chats) - 1
+    st.session_state.last_context_docs = []
     st.rerun()
+
 
 # =========================================
 # LÓGICA DE PREGUNTA / RESPUESTA
+# (actualiza estado, pero NO pinta nada todavía)
 # =========================================
 if question:
     # actualizar nombre del chat con la primera pregunta
@@ -213,32 +247,42 @@ if question:
 
     # guardar pregunta
     messages.append({"role": "user", "content": question})
-    st.markdown(f"<div class='chat-bubble-user'>🧑 {question}</div>", unsafe_allow_html=True)
 
     with st.spinner("Buscando información real y contrastada..."):
         result = answer_with_rag(question)
         answer = result["answer"]
 
-    # mostrar respuesta
-    st.markdown(f"<div class='chat-bubble-assistant'>🎖️ {answer}</div>", unsafe_allow_html=True)
+    # guardar respuesta
     messages.append({"role": "assistant", "content": answer})
 
-    # =========================================
-    # DOCUMENTOS USADOS (solo si hay respuesta útil)
-    # =========================================
+    # decidir si mostrar docs y guardarlos en estado
     answer_lower = answer.lower()
     context_docs = result.get("context_docs", []) or []
 
-    # solo mostrar si NO dice “no aparece en los documentos”
     show_docs = (
         context_docs
         and "no aparece en los documentos" not in answer_lower
         and "no aparece en el contexto" not in answer_lower
     )
+    st.session_state.last_context_docs = context_docs[:2] if show_docs else []
 
-    if show_docs:
+
+# =========================================
+# PINTAR CONVERSACIÓN + DOCS EN EL CONTENEDOR
+# (aparece por encima del input)
+# =========================================
+with chat_container:
+    for msg in messages:
+        if msg["role"] == "user":
+            st.markdown(f"<div class='chat-bubble-user'>🧑 {msg['content']}</div>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<div class='chat-bubble-assistant'>🎖️ {msg['content']}</div>", unsafe_allow_html=True)
+
+    # documentos de la última respuesta (si los hay)
+    docs = st.session_state.last_context_docs
+    if docs:
         with st.expander("📄 Documentos utilizados para responder"):
-            for i, doc in enumerate(context_docs[:2], start=1):  # solo 2 docs
+            for i, doc in enumerate(docs, start=1):  # solo 2 docs ya recortados antes
                 st.markdown(f"### 📌 Documento {i}")
                 fuente = doc.get("fuente", "?")
                 meta = doc.get("metadata", {})
