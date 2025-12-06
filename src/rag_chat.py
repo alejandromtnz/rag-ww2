@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from typing import List, Dict, Any
+import os
 
 import faiss
 import numpy as np
@@ -42,7 +43,8 @@ with open(META_PATH, "r", encoding="utf-8") as f:
 
 print(f"[INFO] Chunks en índice: {index.ntotal}")
 print("[INFO] Cargando modelo de embeddings...")
-embedder = SentenceTransformer(EMBEDDING_MODEL_NAME)
+os.environ["HF_HUB_OFFLINE"] = "1"
+embedder = SentenceTransformer(EMBEDDING_MODEL_NAME, local_files_only=True)
 
 
 # ==========================
@@ -82,6 +84,7 @@ def call_llama(prompt: str, system_prompt: str | None = None) -> str:
         "stream": False,
         "options": {
             "temperature": 0.2,
+            "num_predict": 140
         },
     }
 
@@ -113,7 +116,8 @@ def build_rag_prompt(question: str, context_docs: List[Dict[str, Any]]) -> str:
         if title:
             prefix += f" | Título: {title}"
         prefix += "]\n"
-        context_parts.append(prefix + doc.get("texto", ""))
+        texto = doc.get("texto", "")[:400]   
+        context_parts.append(prefix + texto)
 
     context_str = "\n\n---\n\n".join(context_parts)
 
@@ -121,8 +125,9 @@ def build_rag_prompt(question: str, context_docs: List[Dict[str, Any]]) -> str:
 Usa EXCLUSIVAMENTE la siguiente información de contexto para responder a la pregunta.
 Si la respuesta no está claramente en el contexto, di que no aparece en los documentos.
 
-Cuando des un dato concreto, intenta mencionar la fuente entre paréntesis,
-por ejemplo (wikipedia) o (geografia_pdf).
+Si la pregunta pide un número (personas, muertos, años, fechas), responde
+PRIMERO con la cifra o la fecha, y luego añade como máximo una breve explicación
+de 1–2 frases. No des contexto histórico general si no es necesario.
 
 Contexto:
 {context_str}
@@ -130,7 +135,7 @@ Contexto:
 Pregunta del usuario:
 {question}
 
-Responde en español, de forma clara y breve (máximo 3 párrafos).
+Responde en español, de forma clara y breve (máximo 2 párrafos de 2 o 3 frases cada uno).
 """
     return prompt.strip()
 
@@ -148,6 +153,8 @@ def answer_with_rag(question: str, k: int = 5) -> Dict[str, Any]:
 
     system_prompt = (
         "Eres un asistente experto en Segunda Guerra Mundial y geografía mundial. "
+        "Tu prioridad es responder de forma directa y concisa a la pregunta concreta del usuario. "
+        "No te extiendas con contexto histórico general si no es necesario. "
         "Respondes SIEMPRE en español, usando solo la información del contexto que te doy. "
         "Si el contexto no tiene la respuesta, dilo claramente sin inventar."
     )
