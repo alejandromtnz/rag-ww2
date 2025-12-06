@@ -1,84 +1,155 @@
 import sys
 import os
 import pathlib
+import time
+import streamlit as st
 
-# Ruta al directorio raíz del proyecto (rag_ww2/)
+# =========================================
+# IMPORTS DE RUTAS
+# =========================================
 ROOT_DIR = pathlib.Path(__file__).resolve().parents[1]
 sys.path.append(str(ROOT_DIR))
 
-# Ruta al directorio /src
 SRC_DIR = ROOT_DIR / "src"
 sys.path.append(str(SRC_DIR))
 
 from rag_chat import answer_with_rag
-# O alternativamente:
-# from src.rag_chat import answer_with_rag
-
-import streamlit as st
 
 
-# ==========================
-# CONFIG STREAMLIT
-# ==========================
-
+# =========================================
+# CONFIG STREAMLIT + FUENTES
+# =========================================
 st.set_page_config(
     page_title="RAG WW2 Chatbot",
     page_icon="🪖",
+    layout="wide"
 )
 
+# ======================
+# ESTILO Y TIPO DE LETRA
+# ======================
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
 
-st.title("Chatbot RAG – Segunda Guerra Mundial")
-st.caption("Pregunta lo que quieras. Respuestas basadas SOLO en tu dataset indexado.")
+html, body, * {
+    font-family: 'Poppins', sans-serif !important;
+    color: white;
+}
+
+[data-testid="stAppViewContainer"] {
+    background-color: #0c0f16;
+}
+
+[data-testid="stSidebar"] {
+    background-color: #141720;
+}
+
+.chat-bubble-user {
+    background-color: #2b2d36;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 6px;
+}
+
+.chat-bubble-assistant {
+    background-color: #1f4a72;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 6px;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background: #374151;
+}
+</style>
+""", unsafe_allow_html=True)
 
 
-# ==========================
-# HISTORIAL DE CONVERSACIÓN
-# ==========================
+# =========================================
+# SIDEBAR
+# =========================================
+with st.sidebar:
+    st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/World_War_II_Montage.png/440px-World_War_II_Montage.png")
 
+    st.markdown("### 🧠 Sistema RAG para WW2")
+    st.markdown("""
+    Este chatbot utiliza:
+    - FAISS como motor principal
+    - Embeddings MiniLM
+    - Llama 3.1 vía Ollama
+    - Dataset histórico indexado
+    """)
+
+    st.markdown("---")
+
+    if st.button("🗑 Limpiar conversación"):
+        st.session_state.messages = []
+        st.rerun()
+
+
+# =========================================
+# CABECERA PRINCIPAL
+# =========================================
+st.markdown("<h1 style='text-align: center;'>Chatbot RAG WWII</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center;'>Haz preguntas con rigor histórico basado SOLO en documentos indexados.</p>", unsafe_allow_html=True)
+
+
+# =========================================
+# HISTORIAL
+# =========================================
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
 
-# Mostrar historial
+# Mostrar mensajes previos
 for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
+    if msg["role"] == "user":
+        st.markdown(f"<div class='chat-bubble-user'>🧑 {msg['content']}</div>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"<div class='chat-bubble-assistant'>🎖️ {msg['content']}</div>", unsafe_allow_html=True)
 
 
-# ==========================
+# =========================================
 # INPUT DEL USUARIO
-# ==========================
-
-question = st.chat_input("Haz tu pregunta sobre WW2...")
+# =========================================
+question = st.chat_input("Pregunta sobre batallas, líderes, fechas o hechos históricos...")
 
 if question:
-    # Añadir el mensaje del usuario
     st.session_state.messages.append({"role": "user", "content": question})
+    st.markdown(f"<div class='chat-bubble-user'>🧑 {question}</div>", unsafe_allow_html=True)
 
-    with st.chat_message("user"):
-        st.markdown(question)
+    with st.spinner("Buscando información real y contrastada..."):
+        response = answer_with_rag(question)
+        answer = response["answer"]
 
-    # Llamada al RAG de verdad ❤️‍🔥
-    with st.chat_message("assistant"):
-        with st.spinner("Buscando información real y contrastada..."):
-            result = answer_with_rag(question)  # Llama a tu backend real
-            answer = result["answer"]
+        # Efecto typing
+        placeholder = st.empty()
+        typed = ""
+        for ch in answer:
+            typed += ch
+            placeholder.markdown(f"<div class='chat-bubble-assistant'>🎖️ {typed}█</div>", unsafe_allow_html=True)
+            time.sleep(0.008)
+        placeholder.markdown(f"<div class='chat-bubble-assistant'>🎖️ {answer}</div>", unsafe_allow_html=True)
 
-            st.markdown(answer)
+    st.session_state.messages.append({"role": "assistant", "content": answer})
 
-    # Guardar en historial
-    st.session_state.messages.append(
-        {"role": "assistant", "content": answer}
-    )
+    # =========================================
+    # CONTEXTO UTILIZADO
+    # =========================================
+    with st.expander("📄 Documentos utilizados para responder"):
+        for i, doc in enumerate(response.get("context_docs", []), start=1):
+            st.markdown(f"### 📌 Documento nº {i}")
+            fuente = doc.get("fuente", "?")
+            meta = doc.get("metadata", {})
+            title = meta.get("title") or meta.get("filename") or "Sin título"
+            st.markdown(f"**Fuente:** `{fuente}`")
+            st.markdown(f"**Título/Origen:** `{title}`")
 
-    # Mostrar contexto usado (opcional desplegable)
-    with st.expander("📄 Documentos usados"):
-        for i, d in enumerate(result.get("context_docs", []), start=1):
-            fuente = d.get("fuente", "")
-            meta = d.get("metadata", {})
-            title = meta.get("title") or meta.get("filename") or ""
+            # Mostrar extracto real
+            texto = doc.get("texto", "")
+            st.code(texto[:800] + ("..." if len(texto) > 800 else ""), language="markdown")
 
-            st.markdown(f"### Documento {i}")
-            st.markdown(f"**Fuente:** {fuente}")
-            st.markdown(f"**Título:** {title}")
             st.markdown("---")
