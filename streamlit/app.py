@@ -172,13 +172,17 @@ for msg in messages:
 
 
 # =========================================
-# BOTONES DE ACCIÓN (ENCIMA DEL INPUT)
+# INPUT + BOTONES EN LA MISMA LÍNEA (ABAJO)
 # =========================================
-col_btn1, col_btn2, col_btn3 = st.columns([6, 1, 1])
+col_in1, col_in2, col_in3 = st.columns([6, 1, 1])
 
-with col_btn2:
+with col_in1:
+    question = st.chat_input("Pregunta sobre batallas, líderes, fechas o hechos históricos...")
+
+with col_in2:
     clear_clicked = st.button("🗑 Limpiar", use_container_width=True)
-with col_btn3:
+
+with col_in3:
     new_chat_clicked = st.button("➕ Nuevo chat", use_container_width=True)
 
 # manejar botones
@@ -195,13 +199,6 @@ if new_chat_clicked:
     })
     st.session_state.current_chat_idx = len(chats) - 1
     st.rerun()
-
-
-# =========================================
-# INPUT DEL USUARIO (ABAJO DEL TODO)
-# =========================================
-question = st.chat_input("Pregunta sobre batallas, líderes, fechas o hechos históricos...")
-
 
 # =========================================
 # LÓGICA DE PREGUNTA / RESPUESTA
