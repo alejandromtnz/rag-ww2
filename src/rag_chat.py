@@ -84,7 +84,7 @@ def call_llama(prompt: str, system_prompt: str | None = None) -> str:
         "stream": False,
         "options": {
             "temperature": 0.2,
-            "num_predict": 140
+            "num_predict": 120
         },
     }
 
