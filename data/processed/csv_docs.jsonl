@@ -1,0 +1,132 @@
+{"tipo":"persona","nombre":"Adolf Hitler","atributo":"fecha_nacimiento","valor":"20-04-1889"}
+{"tipo":"persona","nombre":"Adolf Hitler","atributo":"fecha_muerte","valor":"30-04-1945"}
+
+{"tipo":"persona","nombre":"Heinrich Himmler","atributo":"fecha_nacimiento","valor":"07-10-1900"}
+{"tipo":"persona","nombre":"Heinrich Himmler","atributo":"fecha_muerte","valor":"23-05-1945"}
+
+{"tipo":"persona","nombre":"Joseph Goebbels","atributo":"fecha_nacimiento","valor":"29-10-1897"}
+{"tipo":"persona","nombre":"Joseph Goebbels","atributo":"fecha_muerte","valor":"01-05-1945"}
+
+{"tipo":"persona","nombre":"Hermann Göring","atributo":"fecha_nacimiento","valor":"12-01-1893"}
+{"tipo":"persona","nombre":"Hermann Göring","atributo":"fecha_muerte","valor":"15-10-1946"}
+
+{"tipo":"persona","nombre":"Benito Mussolini","atributo":"fecha_nacimiento","valor":"29-07-1883"}
+{"tipo":"persona","nombre":"Benito Mussolini","atributo":"fecha_muerte","valor":"28-04-1945"}
+
+{"tipo":"persona","nombre":"Hideki Tojo","atributo":"fecha_nacimiento","valor":"30-12-1884"}
+{"tipo":"persona","nombre":"Hideki Tojo","atributo":"fecha_muerte","valor":"23-12-1948"}
+
+{"tipo":"persona","nombre":"Franklin D. Roosevelt","atributo":"fecha_nacimiento","valor":"30-01-1882"}
+{"tipo":"persona","nombre":"Franklin D. Roosevelt","atributo":"fecha_muerte","valor":"12-04-1945"}
+
+{"tipo":"persona","nombre":"Winston Churchill","atributo":"fecha_nacimiento","valor":"30-11-1874"}
+{"tipo":"persona","nombre":"Winston Churchill","atributo":"fecha_muerte","valor":"24-01-1965"}
+
+{"tipo":"persona","nombre":"Joseph Stalin","atributo":"fecha_nacimiento","valor":"18-12-1878"}
+{"tipo":"persona","nombre":"Joseph Stalin","atributo":"fecha_muerte","valor":"05-03-1953"}
+
+{"tipo":"persona","nombre":"Dwight D. Eisenhower","atributo":"fecha_nacimiento","valor":"14-10-1890"}
+{"tipo":"persona","nombre":"Dwight D. Eisenhower","atributo":"rol","valor":"Supreme Allied Commander"}
+
+{"tipo":"persona","nombre":"Erwin Rommel","atributo":"fecha_nacimiento","valor":"15-11-1891"}
+{"tipo":"persona","nombre":"Erwin Rommel","atributo":"fecha_muerte","valor":"14-10-1944"}
+
+{"tipo":"persona","nombre":"Isoroku Yamamoto","atributo":"fecha_nacimiento","valor":"04-04-1884"}
+{"tipo":"persona","nombre":"Isoroku Yamamoto","atributo":"fecha_muerte","valor":"18-04-1943"}
+
+{"tipo":"persona","nombre":"Charles de Gaulle","atributo":"fecha_nacimiento","valor":"22-11-1890"}
+{"tipo":"persona","nombre":"Charles de Gaulle","atributo":"fecha_muerte","valor":"09-11-1970"}
+
+{"tipo":"batalla","nombre":"Battle of Stalingrad","atributo":"fecha_inicio","valor":"23-08-1942"}
+{"tipo":"batalla","nombre":"Battle of Stalingrad","atributo":"fecha_fin","valor":"02-02-1943"}
+
+{"tipo":"batalla","nombre":"Battle of Midway","atributo":"fecha_inicio","valor":"04-06-1942"}
+{"tipo":"batalla","nombre":"Battle of Midway","atributo":"fecha_fin","valor":"07-06-1942"}
+
+{"tipo":"batalla","nombre":"Battle of Kursk","atributo":"fecha_inicio","valor":"05-07-1943"}
+{"tipo":"batalla","nombre":"Battle of Kursk","atributo":"fecha_fin","valor":"23-08-1943"}
+
+{"tipo":"batalla","nombre":"Battle of Britain","atributo":"fecha_inicio","valor":"10-07-1940"}
+{"tipo":"batalla","nombre":"Battle of Britain","atributo":"fecha_fin","valor":"31-10-1940"}
+
+{"tipo":"batalla","nombre":"Battle of the Bulge","atributo":"fecha_inicio","valor":"16-12-1944"}
+{"tipo":"batalla","nombre":"Battle of the Bulge","atributo":"fecha_fin","valor":"25-01-1945"}
+
+{"tipo":"batalla","nombre":"Battle of El Alamein","atributo":"fecha_inicio","valor":"23-10-1942"}
+{"tipo":"batalla","nombre":"Battle of El Alamein","atributo":"fecha_fin","valor":"11-11-1942"}
+
+{"tipo":"batalla","nombre":"Battle of Monte Cassino","atributo":"fecha_inicio","valor":"17-01-1944"}
+{"tipo":"batalla","nombre":"Battle of Monte Cassino","atributo":"fecha_fin","valor":"18-05-1944"}
+
+{"tipo":"batalla","nombre":"Battle of Berlin","atributo":"fecha_inicio","valor":"16-04-1945"}
+{"tipo":"batalla","nombre":"Battle of Berlin","atributo":"fecha_fin","valor":"02-05-1945"}
+
+{"tipo":"evento","nombre":"Invasion of Poland","atributo":"fecha_inicio","valor":"01-09-1939"}
+{"tipo":"evento","nombre":"Invasion of Poland","atributo":"fecha_fin","valor":"06-10-1939"}
+
+{"tipo":"evento","nombre":"Operation Barbarossa","atributo":"fecha_inicio","valor":"22-06-1941"}
+
+{"tipo":"evento","nombre":"Operation Torch","atributo":"fecha_inicio","valor":"08-11-1942"}
+
+{"tipo":"evento","nombre":"Operation Husky","atributo":"fecha_inicio","valor":"09-07-1943"}
+
+{"tipo":"evento","nombre":"D-Day (Normandy landings)","atributo":"fecha","valor":"06-06-1944"}
+
+{"tipo":"evento","nombre":"Pearl Harbor attack","atributo":"fecha","valor":"07-12-1941"}
+
+{"tipo":"evento","nombre":"Fall of France","atributo":"fecha","valor":"22-06-1940"}
+
+{"tipo":"evento","nombre":"Armistice Poland 1939","atributo":"fecha","valor":"06-10-1939"}
+
+{"tipo":"evento","nombre":"Germany surrenders (VE Day)","atributo":"fecha","valor":"08-05-1945"}
+
+{"tipo":"evento","nombre":"Japan surrenders (VJ Day)","atributo":"fecha","valor":"02-09-1945"}
+
+{"tipo":"evento","nombre":"Hiroshima bombing","atributo":"fecha","valor":"06-08-1945"}
+{"tipo":"evento","nombre":"Nagasaki bombing","atributo":"fecha","valor":"09-08-1945"}
+
+{"tipo":"evento","nombre":"Yalta Conference","atributo":"fecha_inicio","valor":"04-02-1945"}
+{"tipo":"evento","nombre":"Yalta Conference","atributo":"fecha_fin","valor":"11-02-1945"}
+
+{"tipo":"evento","nombre":"Tehran Conference","atributo":"fecha_inicio","valor":"28-11-1943"}
+{"tipo":"evento","nombre":"Tehran Conference","atributo":"fecha_fin","valor":"01-12-1943"}
+
+{"tipo":"evento","nombre":"Potsdam Conference","atributo":"fecha_inicio","valor":"17-07-1945"}
+{"tipo":"evento","nombre":"Potsdam Conference","atributo":"fecha_fin","valor":"02-08-1945"}
+
+{"tipo":"evento","nombre":"Bombing of Dresden","atributo":"fecha","valor":"13-02-1945"}
+
+{"tipo":"evento","nombre":"Holocaust begins","atributo":"fecha","valor":"01-09-1939"}
+{"tipo":"evento","nombre":"Holocaust ends","atributo":"fecha","valor":"08-05-1945"}
+
+{"tipo":"evento","nombre":"Manhattan Project begins","atributo":"fecha","valor":"01-06-1942"}
+{"tipo":"evento","nombre":"Manhattan Project ends","atributo":"fecha","valor":"02-09-1945"}
+
+{"tipo":"evento","nombre":"United Nations founded","atributo":"fecha","valor":"24-10-1945"}
+
+{"tipo":"evento","nombre":"Formation of NATO","atributo":"fecha","valor":"04-04-1949"}
+
+{"tipo":"evento","nombre":"Cold War begins","atributo":"fecha","valor":"03-09-1945"}
+
+{"tipo":"evento","nombre":"Berlin Blockade begins","atributo":"fecha_inicio","valor":"24-06-1948"}
+{"tipo":"evento","nombre":"Berlin Blockade ends","atributo":"fecha_fin","valor":"12-05-1949"}
+
+{"tipo":"evento","nombre":"Founding of European Coal and Steel Community","atributo":"fecha","valor":"18-04-1951"}
+
+{"tipo":"evento","nombre":"Nuremberg Trials begin","atributo":"fecha_inicio","valor":"20-11-1945"}
+{"tipo":"evento","nombre":"Nuremberg Trials end","atributo":"fecha_fin","valor":"01-10-1946"}
+
+{"tipo":"evento","nombre":"Battle of Okinawa","atributo":"fecha_inicio","valor":"01-04-1945"}
+{"tipo":"evento","nombre":"Battle of Okinawa","atributo":"fecha_fin","valor":"22-06-1945"}
+
+{"tipo":"evento","nombre":"Battle of Iwo Jima","atributo":"fecha_inicio","valor":"19-02-1945"}
+{"tipo":"evento","nombre":"Battle of Iwo Jima","atributo":"fecha_fin","valor":"26-03-1945"}
+
+{"tipo":"evento","nombre":"Battle of Guadalcanal","atributo":"fecha_inicio","valor":"07-08-1942"}
+{"tipo":"evento","nombre":"Battle of Guadalcanal","atributo":"fecha_fin","valor":"09-02-1943"}
+
+{"tipo":"evento","nombre":"Estimated WWII total deaths","atributo":"muertos_estimados","valor":"70000000"}
+{"tipo":"evento","nombre":"Estimated Holocaust victims","atributo":"muertos_estimados","valor":"6000000"}
+{"tipo":"evento","nombre":"Estimated civilian deaths WWII Europe","atributo":"muertos_estimados","valor":"35000000"}
+{"tipo":"evento","nombre":"Estimated civilian deaths WWII Asia","atributo":"muertos_estimados","valor":"20000000"}
+{"tipo":"evento","nombre":"Estimated military deaths WWII","atributo":"muertos_estimados","valor":"21000000"}   

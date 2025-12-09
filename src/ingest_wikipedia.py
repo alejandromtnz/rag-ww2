@@ -72,6 +72,25 @@ KEYWORDS = [
     "Division of Germany",
     "Cold War origins",
     "United Nations",
+
+    # --- EXTRA KEYWORDS CLAVE ---
+    "Heinrich Himmler",
+    "Reinhard Heydrich",
+    "Joseph Goebbels",
+    "Hermann Göring",
+    "SS",
+    "Gestapo",
+    "Wehrmacht",
+    "Red Army",
+    "Royal Air Force",
+    "Molotov–Ribbentrop Pact",
+    "Yalta Conference",
+    "Potsdam Conference",
+    "Tehran Conference",
+    "Luftwaffe",
+    "Panzer divisions",
+    "Battle of El Alamein",
+    "Battle of the Bulge",
 ]
 
 def fetch_wiki_page(title: str, lang: str = "en") -> dict | None:
