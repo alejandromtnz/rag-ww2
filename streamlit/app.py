@@ -108,7 +108,9 @@ if question:
                 "no aparece información",
                 "no se ha encontrado información",
                 "no existe información",
-                "no dispongo de información"
+                "no dispongo de información",
+                "No aparece en los documentos",
+                "no aparece información"
             ))
 
     st.session_state.messages.append({"role": "assistant", "content": answer})

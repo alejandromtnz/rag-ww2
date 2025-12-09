@@ -85,7 +85,6 @@ def call_llama(prompt: str, system_prompt: str | None = None) -> str:
         "stream": False,
         "options": {
             "temperature": 0.2,
-            "num_predict": 140
         },
     }
 
@@ -117,8 +116,7 @@ def build_rag_prompt(question: str, context_docs: List[Dict[str, Any]]) -> str:
         if title:
             prefix += f" | Título: {title}"
         prefix += "]\n"
-        texto = doc.get("texto", "")[:400]   
-        context_parts.append(prefix + texto)
+        context_parts.append(prefix + doc.get("texto", ""))
 
     context_str = "\n\n---\n\n".join(context_parts)
 
