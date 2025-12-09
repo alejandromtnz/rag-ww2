@@ -14,6 +14,23 @@ except ImportError:
 
 DOCUMENTS_FILE = DATA_PROCESSED / "documentos.jsonl"
 
+
+def split_text(text: str, max_chars: int = 1200, overlap: int = 200):
+    """
+    Divide un texto largo en chunks de tamaño max_chars,
+    solapados 'overlap' caracteres para no cortar ideas a la mitad.
+    """
+    chunks = []
+    start = 0
+    n = len(text)
+    while start < n:
+        end = start + max_chars
+        chunk = text[start:end]
+        chunks.append(chunk)
+        start += max_chars - overlap
+    return chunks
+
+
 def main():
     INDEX_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -28,8 +45,20 @@ def main():
     with open(DOCUMENTS_FILE, "r", encoding="utf-8") as f:
         for line in f:
             d = json.loads(line)
-            textos.append(d["texto"])
-            metadatos.append(d)
+            texto_original = d.get("texto", "")
+            if not texto_original:
+                continue
+
+            # Trocear el texto original en chunks más pequeños
+            chunks = split_text(texto_original, max_chars=1200, overlap=200)
+
+            for i, chunk in enumerate(chunks):
+                nuevo_meta = dict(d)          # copia superficial
+                nuevo_meta["texto"] = chunk   # sustituimos por el trozo
+                nuevo_meta["chunk_id"] = i    # opcional: índice del chunk
+
+                textos.append(chunk)
+                metadatos.append(nuevo_meta)
 
     print(f"[INFO] Total de chunks cargados: {len(textos)}")
 
@@ -58,6 +87,7 @@ def main():
 
     print(f"[DONE] Índice guardado en: {index_path}")
     print(f"[DONE] Metadatos guardados en: {meta_path}")
+
 
 if __name__ == "__main__":
     main()
